@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Қарапайым жергілікті желі (LAN) — нұсқаулық</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;line-height:1.5;margin:0;padding:20px;background:#f7f9fc;color:#0b2545}
+    .container{max-width:900px;margin:0 auto;background:#fff;padding:24px;border-radius:10px;box-shadow:0 6px 20px rgba(11,37,69,0.08)}
+    h1{margin-top:0;color:#083058}
+    h2{color:#0a3b63}
+    pre{background:#0e2438;color:#e6eef9;padding:12px;border-radius:6px;overflow:auto}
+    code{font-family:SFMono-Regular,Menlo,monospace;background:#eef6ff;padding:2px 6px;border-radius:4px}
+    .cmd-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+    .btn{background:#0a66c2;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    .note{background:#fff4d6;padding:10px;border-left:4px solid #ffd166;border-radius:6px}
+    ul{margin-top:6px}
+    footer{font-size:0.9em;color:#445169;margin-top:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:700px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Қарапайым жергілікті желіні (LAN) орнату — HTML нұсқаулық</h1>
+    <p>Бұл бетте: желі архитектурасы, IP конфигурациясы мысалдары (статикалық және DHCP), Windows/Linux/Mac командалары, файл бөлісу және негізгі тексеру қадамдары көрсетілген. Оны оқу арқылы екі немесе бірнеше компьютерден тұратын қарапайым жергілікті желіні тез баптай аласыз.</p>
+
+    <h2>1. Қандай жабдық қажет?</h2>
+    <ul>
+      <li>Маршрутизатор (router) немесе коммутатор (switch) — егер бірнеше құрылғы қосылса.</li>
+      <li>Ethernet кабельдері (CAT5e/6) немесе Wi-Fi роутер арқылы сымсыз қосылу.</li>
+      <li>Компьютер(лар), ноутбук(тар) — Windows, Linux немесе Mac.</li>
+    </ul>
+
+    <h2>2. Желінің қарапайым схемасы</h2>
+    <p>Маршрутизатор (DHCP) —&gt; Switch —&gt; Компьютер1, Компьютер2, ...</p>
+
+    <h2>3. IP конфигурациясы — негізгі түсінік</h2>
+    <p>Ең жиі қолданылатын локальды желі диапазоны:</p>
+    <ul>
+      <li>192.168.0.0/24 (мысалы: 192.168.0.1 — маршрутизатор)</li>
+      <li>192.168.1.0/24 (мысалы: 192.168.1.1 — маршрутизатор)</li>
+      <li>10.0.0.0/24 (мысалы: 10.0.0.1 — маршрутизатор)</li>
+    </ul>
+    <p><strong>Subnet mask:</strong> әдетте <code>255.255.255.0</code> (/24)</p>
+
+    <div class="note">
+      <strong>Ескерту:</strong> егер маршрутизаторда DHCP қосулы болса, құрылғылар автоматты түрде IP алады. Қолмен (статикалық) бергенде әр құрылғыға бірегей IP орнатыңыз.
+    </div>
+
+    <h2>4. Мысал — статикалық IP орнату</h2>
+    <div class="grid">
+      <div>
+        <h3>Windows (GUI нұсқасы)</h3>
+        <ol>
+          <li>Control Panel → Network and Internet → Network and Sharing Center → Change adapter settings.</li>
+          <li>Таңдап, Properties → Internet Protocol Version 4 (TCP/IPv4) → Properties.</li>
+          <li>"Use the following IP address": IP: <code>192.168.1.10</code>, Subnet mask: <code>255.255.255.0</code>, Default gateway: <code>192.168.1.1</code>.</li>
+          <li>DNS: роутердің IP немесе 8.8.8.8 және 8.8.4.4.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Linux (terminal)</h3>
+        <p>Убунту/дебиан үлгісі (уақытша командалық):</p>
+        <div class="cmd-row">
+          <pre id="linux-temp">sudo ip addr add 192.168.1.11/24 dev eth0
+sudo ip route add default via 192.168.1.1
+sudo bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'</pre>
+          <button class="btn" onclick="copyText('linux-temp')">Көшіру</button>
+        </div>
+        <p>Тұрақты конфигурация үшін NetworkManager немесе /etc/network/interfaces файлын пай
